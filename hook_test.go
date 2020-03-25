@@ -229,11 +229,11 @@ var _ = Describe("BeforeQuery and AfterQuery", func() {
 
 			q, err := evt.UnformattedQuery()
 			Expect(err).NotTo(HaveOccurred())
-			Expect(q).To(Equal("SELECT ?"))
+			Expect(string(q)).To(Equal("SELECT ?"))
 
 			q, err = evt.FormattedQuery()
 			Expect(err).NotTo(HaveOccurred())
-			Expect(q).To(Equal("SELECT 1"))
+			Expect(string(q)).To(Equal("SELECT 1"))
 
 			evt.Stash = map[interface{}]interface{}{
 				"data": 1,
@@ -251,11 +251,11 @@ var _ = Describe("BeforeQuery and AfterQuery", func() {
 
 			q, err := evt.UnformattedQuery()
 			Expect(err).NotTo(HaveOccurred())
-			Expect(q).To(Equal("SELECT ?"))
+			Expect(string(q)).To(Equal("SELECT ?"))
 
 			q, err = evt.FormattedQuery()
 			Expect(err).NotTo(HaveOccurred())
-			Expect(q).To(Equal("SELECT 1"))
+			Expect(string(q)).To(Equal("SELECT 1"))
 
 			Expect(evt.Stash["data"]).To(Equal(1))
 
@@ -294,11 +294,11 @@ var _ = Describe("BeforeQuery and AfterQuery", func() {
 
 			q, err := evt.UnformattedQuery()
 			Expect(err).NotTo(HaveOccurred())
-			Expect(q).To(Equal("SELECT ?"))
+			Expect(string(q)).To(Equal("SELECT ?"))
 
 			q, err = evt.FormattedQuery()
 			Expect(err).NotTo(HaveOccurred())
-			Expect(q).To(Equal("SELECT 1"))
+			Expect(string(q)).To(Equal("SELECT 1"))
 
 			evt.Stash = map[interface{}]interface{}{
 				"data": 1,
@@ -316,11 +316,11 @@ var _ = Describe("BeforeQuery and AfterQuery", func() {
 
 			q, err := evt.UnformattedQuery()
 			Expect(err).NotTo(HaveOccurred())
-			Expect(q).To(Equal("SELECT ?"))
+			Expect(string(q)).To(Equal("SELECT ?"))
 
 			q, err = evt.FormattedQuery()
 			Expect(err).NotTo(HaveOccurred())
-			Expect(q).To(Equal("SELECT 1"))
+			Expect(string(q)).To(Equal("SELECT 1"))
 
 			Expect(evt.Stash["data"]).To(Equal(1))
 
@@ -351,7 +351,9 @@ var _ = Describe("BeforeQuery and AfterQuery", func() {
 				return c, nil
 			}
 			hookImpl.afterQueryMethod = func(c context.Context, evt *pg.QueryEvent) error {
-				Expect(evt.FormattedQuery()).To(Equal(`CREATE INDEX stories_author_id_idx ON "hook_tests" (author_id)`))
+				q, err := evt.FormattedQuery()
+				Expect(err).NotTo(HaveOccurred())
+				Expect(string(q)).To(Equal(`CREATE INDEX stories_author_id_idx ON "hook_tests" (author_id)`))
 				return nil
 			}
 			db.AddQueryHook(hookImpl)
